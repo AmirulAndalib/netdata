@@ -129,6 +129,23 @@ To switch from a Docker container to a different install type:
 
 </details>
 
+## Understanding Release Channels
+
+Netdata uses two independent release channels for distributing Agent updates:
+
+- **Stable**: Published from tagged releases. Each stable release is a specific, versioned build that has passed QA. Stable packages use the `netdata-repo` repository configuration.
+- **Nightly**: Published from the latest commit on the master branch. Nightly builds are produced daily by CI and include the most recent code changes. Nightly packages use the `netdata-repo-edge` repository configuration.
+
+These two channels have separate publishing pipelines. Their version numbers are not synchronized — a nightly build's version reflects the last CI build from master, not the most recent stable tag.
+
+:::note
+
+After a new stable release is published, the nightly channel may temporarily show an older base version until the next nightly CI cycle picks up the post-release commits from master. This is expected and does not indicate a problem with your installation.
+
+:::
+
+The `kickstart.sh` installer defaults to the nightly channel. To install from the stable channel instead, pass `--stable-channel` to the kickstart script.
+
 ## Switching Between Release Channels
 
 ### Static Builds and Local Builds
