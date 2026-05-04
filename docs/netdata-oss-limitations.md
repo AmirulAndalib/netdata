@@ -123,6 +123,12 @@ The 5-node limit on multi-node dashboards applies to Community plans:
 1. **Upgrade to Business** for unlimited nodes
 2. **Or select preferred nodes** in Space settings to choose which 5 nodes appear in multi-node views
 
+:::note
+
+The 5-node limit applies only to **multi-node views** — the dashboard feature that displays metrics from multiple nodes in a single view. There is no limit on the number of child nodes that can stream metrics to a [Netdata Parent](/docs/observability-centralization-points/metrics-centralization-points/README.md). Self-hosted users can monitor unlimited nodes via Parent-Child streaming, with each node's data individually accessible on the Parent's dashboard.
+
+:::
+
 ## Summary
 
 | What You Get | Anonymous | Community | Business |
