@@ -120,7 +120,9 @@ It depends on the ephemerality setting of each Netdata Child.
 
 To set the ephemeral flag on a node, edit its netdata.conf and in the `[global]` section set `is ephemeral node = yes`. This setting is propagated to parent nodes and Netdata Cloud.
 
-A parent node tracks connections and disconnections. When a node is marked as ephemeral and stops connecting for more than 24 hours, the parent will delete it from its memory and local administration, and tell Cloud that it is no longer live nor stale. Data for the node can no longer be accessed, but if the node connects again later, the node will be "revived", and previous data becomes available again.
+By default, automatic cleanup of ephemeral nodes is disabled. To enable it, configure `cleanup ephemeral hosts after` in the `[db]` section of `netdata.conf` on Parent nodes. Once configured, ephemeral nodes that have been disconnected for longer than the specified duration will be automatically removed from the Parent and Netdata Cloud. For full details on ephemeral vs permanent node configuration and CLI commands, see [Node Types and Lifecycle Strategies](/docs/nodes-ephemerality.md).
+
+Data for a removed node can no longer be accessed, but if the node connects again later, it will be "revived" and previous data becomes available again.
 
 A node can be forced into this "forgotten" state with the Netdata CLI tool on the parent the node is connected to (if still connected) or one of the parent Agents it was previously connected to. The state will be propagated _upwards_ and _sideways_ in case of an HA setup.
 
