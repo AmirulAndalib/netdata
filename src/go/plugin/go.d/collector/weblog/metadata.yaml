@@ -27,7 +27,7 @@ modules:
       data_collection:
         metrics_description: |
           This collector monitors web servers by parsing their log files.
-        method_description: ""
+        method_description: "Parses access log files from Nginx, Apache, IIS (W3C Extended format), and other web servers."
       default_behavior:
         auto_detection:
           description: |

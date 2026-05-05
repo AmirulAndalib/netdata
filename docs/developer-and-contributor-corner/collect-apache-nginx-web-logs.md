@@ -1,4 +1,4 @@
-# Monitor Nginx, Apache, or IIS web server log files
+# Monitor Nginx or Apache web server log files
 
 Parsing web server log files with Netdata, revealing the volume of redirects, requests and other metrics, can give you a better overview of your infrastructure.
 
@@ -9,7 +9,7 @@ ever. In one test on a system with SSD storage, the collector consistently parse
 200ms, using ~30% of a single core.
 
 The [web_log](/src/go/plugin/go.d/collector/weblog/README.md) collector is currently compatible
-with [Nginx](https://nginx.org/en/), [Apache](https://httpd.apache.org/), and [IIS](https://www.iis.net/).
+with [Nginx](https://nginx.org/en/) and [Apache](https://httpd.apache.org/).
 
 This guide will walk you through using the new Go-based web log collector to turn the logs these web servers
 constantly write to into real-time insights into your infrastructure.
@@ -88,45 +88,6 @@ Restart Netdata with `sudo systemctl restart netdata`, or the [appropriate metho
 The web log collector is capable of parsing custom Nginx and Apache log formats and presenting them as charts, but we'll leave that topic for a separate guide.
 
 We do have [extensive documentation](/src/go/plugin/go.d/collector/weblog/README.md) on how to build custom parsing for Nginx and Apache logs.
-
-## Monitor IIS log files
-
-IIS uses the W3C Extended Log File Format, which is space-delimited. The web_log collector supports IIS log files using the CSV parser with an explicit format string.
-
-:::important
-
-Auto-detection does not work for IIS log files. You must set `log_type: csv` and specify `csv_config.format` manually.
-
-:::
-
-### Default IIS log path
-
-On Windows, IIS stores log files at `C:\inetpub\logs\LogFiles\W3SVC<SiteID>\u_ex*.log`.
-
-If you are running the Netdata Agent on WSL (Windows Subsystem for Linux), the path becomes `/mnt/c/inetpub/logs/LogFiles/W3SVC1/u_ex*.log`.
-
-### Configure the web_log collector for IIS
-
-Edit the web_log collector configuration:
-
-```bash
-./edit-config go.d/web_log.conf
-```
-
-Add the following job configuration:
-
-```yaml
-jobs:
-  - name: iis
-    path: /mnt/c/inetpub/logs/LogFiles/W3SVC1/u_ex*.log
-    log_type: csv
-    csv_config:
-      format: '- - $host $request_method $request_uri - $server_port - $remote_addr - - $status - - $request_time'
-```
-
-The `csv_config.format` maps the default IIS W3C log fields (`date time s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) cs(Referer) sc-status sc-substatus sc-win32-status time-taken`) to the web_log collector's known fields. Fields not relevant to the collector are represented by `-` placeholders.
-
-Restart Netdata with `sudo systemctl restart netdata`, or use the [appropriate method](/docs/netdata-agent/start-stop-restart.md) for your system.
 
 ## Tweak web log collector alerts
 
