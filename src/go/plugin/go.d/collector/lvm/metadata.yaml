@@ -21,7 +21,8 @@ modules:
     overview:
       data_collection:
         metrics_description: >
-          This collector monitors the health of LVM logical volumes.
+          This collector monitors the space utilization of LVM thin pool volumes.
+          Only thin pool logical volumes are monitored; other types (linear, striped, mirrored, snapshot, etc.) are skipped.
           It relies on the [`lvs`](https://man7.org/linux/man-pages/man8/lvs.8.html) CLI tool but avoids directly executing the binary.
           Instead, it utilizes `ndsudo`, a Netdata helper specifically designed to run privileged commands securely within the Netdata environment.
           This approach eliminates the need to use `sudo`, improving security and potentially simplifying permission management.
@@ -34,7 +35,7 @@ modules:
         description: ""
       default_behavior:
         auto_detection:
-          description: ""
+          description: "Automatically discovers all LVM thin pool volumes on the host using the lvs command. No manual configuration of volume names is required."
         limits:
           description: ""
         performance_impact:
@@ -91,14 +92,14 @@ modules:
       availability: []
       scopes:
         - name: logical volume
-          description: These metrics refer to the LVM logical volume.
+          description: These metrics refer to LVM thin pool logical volumes only. Other logical volume types (linear, striped, mirrored, etc.) are not monitored.
           labels:
             - name: lv_name
               description: Logical volume name
             - name: vg_name
               description: Volume group name
             - name: volume_type
-              description: Type of the volume
+              description: Always thin_pool for monitored volumes
           metrics:
             - name: lvm.lv_data_space_utilization
               description: Logical volume space allocated for data
