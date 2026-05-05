@@ -346,6 +346,7 @@ For complete details on configuration loading order and precedence rules, see [A
 
 - A few lines use space-separated lists to define how the entity behaves. You can use `*` as a wildcard or prefix with `!` for a negative match. Order is important! See our [simple patterns docs](/src/libnetdata/simple_pattern/README.md) for more examples
 - Lines terminated by a `\` are spliced together with the next line. The backslash is removed, and the following line is joined with the current one. No space is inserted, so you can split a line anywhere, even in the middle of a word. This is handy if your `info` line consists of several sentences
+- The `#` character is only recognized as a comment when it is the first non-whitespace character on a line. There is no inline/end-of-line comment support. Any `#` appearing after a key:value pair becomes part of the value string and may cause errors in expression lines (`warn`, `crit`, `calc`) or unexpected behavior in pattern matching (`host labels`, `chart labels`). Place comments on their own separate lines above the configuration line they annotate
 
 ### Complete Configuration Reference
 
@@ -772,7 +773,8 @@ host labels: room = server
 **Pattern Support:**
 
 ```text
-host labels: installed = 201*  # Matches all hosts installed in 2010s
+# Matches all hosts installed in 2010s
+host labels: installed = 201*
 ```
 
 **How It Works:**
@@ -1521,7 +1523,8 @@ warn: $this > (($status >= $WARNING) ? (75) : (80))
       on: system.ram
    lookup: average -1m percentage of used
     every: 10s
-     war: $this > 50  # Low threshold for testing
+   # Low threshold for testing
+     war: $this > 50
      info: Test alert - safe to ignore
    ```
 
