@@ -1007,7 +1007,7 @@ Although the `alarm_variables` link shows variables for a particular chart, the 
 
 | Constant         | Numeric Value | Usage                          |
 |------------------|---------------|--------------------------------|
-| `$REMOVED`       | -2            | Alert deleted (SIGUSR2 reload) |
+| `$REMOVED`       | -2            | Chart marked OBSOLETE (collector stopped), child disconnected, agent exit, or health reload |
 | `$UNINITIALIZED` | -1            | Alert not initialized          |
 | `$UNDEFINED`     | 0             | Calculation failed             |
 | `$CLEAR`         | 1             | Alert OK/not triggered         |
@@ -1036,12 +1036,14 @@ Status values increase with severity, so `$status > $CLEAR` will match both WARN
 
 **When Status Changes:**
 
-- **`REMOVED`** - Alert deleted during configuration reload
+- **`REMOVED`** - Chart marked OBSOLETE (collector stopped and no data for 60 seconds), child disconnected, agent exit, or configuration reload
 - **`UNINITIALIZED`** - Alert created but not yet calculated
 - **`UNDEFINED`** - Database lookup failed, division by zero, etc.
 - **`CLEAR`** - Alert conditions aren’t met (normal state)
 - **`WARNING`** - Warning expression returned true/non-zero
 - **`CRITICAL`** - Critical expression returned true/non-zero
+
+When a collector stops and its chart is marked OBSOLETE, the alert continues evaluating until the chart has not collected data for 60 seconds. At that point, the alert transitions to REMOVED status. This means alerts on disappeared services or hosts do not clear immediately — they wait 60 seconds after data collection stops before being removed.
 
 **Script Execution:** The external script (`exec` line) is called for ALL status changes.
 
