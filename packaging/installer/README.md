@@ -46,6 +46,9 @@ You can also install Netdata directly without connecting to Netdata Cloud. Choos
 **Synology** - Install on Synology NAS devices
 [→ Install on Synology](/packaging/installer/methods/synology.md)
 
+**TrueNAS** - Monitor TrueNAS NAS systems
+[→ Install on TrueNAS](/packaging/installer/methods/freebsd.md)
+
 ### Automation & Cloud Platforms
 
 **Ansible** - Automate deployment with Ansible

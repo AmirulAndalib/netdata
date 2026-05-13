@@ -6,6 +6,12 @@ This guide is community-maintained and might not always reflect the latest detai
 
 :::
 
+:::note
+
+**TrueNAS users:** TrueNAS CORE is FreeBSD-based — you can follow the steps on this page to install Netdata directly or from within a FreeBSD jail. TrueNAS SCALE is Linux-based; use the [Linux kickstart installer](/packaging/installer/methods/kickstart.md) instead.
+
+:::
+
 ## 1. Install dependencies
 
 Run as `root`:
