@@ -62,6 +62,56 @@ No need to restart the Netdata Agent after modifying health configuration files 
 sudo netdatacli reload-health
 ```
 
+## Customizing the systemd service
+
+On systems using systemd, you can customize the Netdata service using drop-in overrides. Avoid editing the installed service file directly, as package updates will overwrite your changes.
+
+To create or edit an override, run:
+
+```bash
+sudo systemctl edit netdata
+```
+
+This opens a drop-in file in your default editor. Add any `[Service]` directives you need.
+
+### Running Netdata in a specific network namespace
+
+To run the Netdata Agent in a specific Linux network namespace, add the following to the override file:
+
+```ini
+[Service]
+NetworkNamespacePath=/var/run/netns/SHARED
+```
+
+Replace `SHARED` with the name of your target namespace.
+
+:::note
+
+The named namespace must already exist before the service can start in it. Create it with:
+
+```bash
+sudo ip netns add SHARED
+```
+
+:::
+
+After saving the override file, apply the changes:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart netdata
+```
+
+:::warning
+
+Running the Agent in a custom network namespace may affect which network interfaces and remote services it can reach. Verify that the Agent can still connect to its streaming parent and Netdata Cloud if applicable.
+
+:::
+
+### Other customizations
+
+The same `systemctl edit` mechanism supports any systemd service directive, such as resource limits (`MemoryMax`, `CPUQuota`), environment variables (`Environment`), or sandboxing options (`ProtectSystem`). See `man systemd.exec` and `man systemd.resource-control` for the full list.
+
 ## Windows
 
 :::note
