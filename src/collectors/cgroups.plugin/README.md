@@ -127,6 +127,66 @@ or [CetusGuard](https://github.com/hectorm/cetusguard)
 can also be used to give Netdata restricted access to the socket. Note that `PODMAN_HOST` in Netdata's environment
 should be set to the proxy's URL in this case.
 
+#### Note on Docker rootless container names
+
+When Netdata runs as a native system service and Docker runs in **rootless mode**, containers create cgroups under
+`user.slice` (e.g. `/sys/fs/cgroup/user.slice/user-<UID>.slice/docker-<ID>.scope`). By default, Netdata excludes
+`user.slice` from its cgroup search (see `search for cgroups in subpaths matching` above), so two configuration
+changes are required.
+
+**1. Enable cgroup discovery under `user.slice`**
+
+Edit `netdata.conf` and remove the `!/user.slice` exclusion from the search pattern so that Netdata walks into the
+rootless Docker cgroup paths:
+
+```text
+[plugin:cgroups]
+	search for cgroups in subpaths matching =  !*/init.scope  !*-qemu  !/init.scope  !/system  !/systemd  !/user  *
+```
+
+:::note
+
+The original default includes `!/user.slice`. Removing that entry allows Netdata to discover cgroups under
+`user.slice`, including rootless Docker containers.
+
+:::
+
+**2. Point Netdata at the rootless Docker socket for name resolution**
+
+The `cgroup-name.sh` script uses the `DOCKER_HOST` environment variable (default: `unix:///var/run/docker.sock`) to
+query the Docker API for container names. Rootless Docker does not create this socket; its socket lives at
+`/run/user/<UID>/docker.sock`, where `<UID>` is the UID of the user running rootless Docker.
+
+Set `DOCKER_HOST` via a systemd override:
+
+```sh
+systemctl edit netdata.service
+```
+
+Add:
+
+```ini
+[Service]
+Environment="DOCKER_HOST=unix:///run/user/<UID>/docker.sock"
+```
+
+Then reload and restart Netdata:
+
+```sh
+systemctl daemon-reload
+systemctl restart netdata
+```
+
+**3. Ensure the Netdata user can access the rootless Docker socket**
+
+The rootless Docker socket and its parent directory (`/run/user/<UID>/`) are owned by the rootless Docker user and have
+restrictive permissions. Grant the `netdata` user read access, for example with ACLs:
+
+```sh
+setfacl -m u:netdata:x /run/user/<UID>
+setfacl -m u:netdata:rw /run/user/<UID>/docker.sock
+```
+
 ### Alerts
 
 CPU and memory limits are watched and used to rise alerts. Memory usage for every cgroup is checked against `ram`
