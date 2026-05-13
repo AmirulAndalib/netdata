@@ -72,6 +72,12 @@ server {
 This method is recommended when Netdata is to be served from a subfolder (or directory).
 In this case, the virtual host `netdata.example.com` already exists and Netdata has to be accessed via `netdata.example.com/netdata/`.
 
+:::note
+
+The path `/netdata` is used as an example throughout this section. If you want to serve Netdata from a different subfolder (for example `/monitoring` or `/netplan`), replace every occurrence of `/netdata` in the `location` directives below with your chosen path. The upstream name and `proxy_pass` reference must also be updated consistently.
+
+:::
+
 ```text
 upstream netdata {
     server 127.0.0.1:19999;
@@ -113,6 +119,12 @@ server {
 ### As a subfolder for multiple Netdata servers, via one Nginx
 
 This is the recommended configuration when one Nginx will be used to manage multiple Netdata servers via subfolders.
+
+:::note
+
+The path `/netdata` is used as an example prefix throughout this section. You can replace it with any subfolder path you prefer, as long as you update all `location` directives consistently.
+
+:::
 
 ```text
 upstream backend-server1 {
