@@ -502,10 +502,12 @@
           - **Integration configuration**
             - Webhook URL: The url of the service that Netdata will send notifications to. In order to keep the communication secured, Netdata only accepts HTTPS urls.
             - Extra headers: Optional key-value pairs that you can set to be included in the HTTP requests sent to the webhook URL.
-            - Authentication Mechanism, Netdata webhook integration supports 3 different authentication mechanisms.
-              - Mutual TLS (recommended): Default authentication mechanism used if no other method is selected
-              - Basic: The client sends a request with an Authorization header that includes a base64-encoded string in the format **username:password**.
-              - Bearer: The client sends a request with an Authorization header that includes a **bearer token**.
+            - Authentication: Netdata webhook integration authenticates using two independent layers.
+              - Transport layer (always active): The Netdata client always presents its X.509 client certificate (CN=app.netdata.cloud) during the TLS handshake. This enables mutual TLS (mTLS) when your server is configured to verify client certificates.
+              - HTTP layer (optional): Select an HTTP authentication method to include in the Authorization header.
+                - None: No HTTP-layer authentication (relies solely on mTLS if your server enforces it).
+                - Basic (recommended): Sends an Authorization header with a base64-encoded username:password.
+                - Bearer: Sends an Authorization header with a bearer token.
           - **Verification**
             - Token: The Token from the latest **Test notification** received on the webhook endpoint.
               - Click on the **Test** button to receive a notification. Token will be embedded in the payload.
@@ -562,17 +564,25 @@
         |:------------:|------------------|
         | Content-Type | application/json |
 
-      #### Authentication mechanisms
+      #### Authentication
 
-      Netdata webhook integration supports 3 different authentication mechanisms:
+      Netdata webhook integration uses two independent authentication layers:
 
-      ##### Mutual TLS authentication (recommended)
+      - **Transport layer (mTLS):** The Netdata client always presents its X.509 client certificate (CN=app.netdata.cloud) during TLS handshakes. This enables mutual TLS (mTLS) when your server is configured to verify client certificates. mTLS is only effective if your server actively validates the client certificate; it is not a replacement for HTTP-layer authentication.
 
-      In mutual Transport Layer Security (mTLS) authentication, the client and the server authenticate each other using X.509 certificates. This ensures that the client is connecting to the intended server, and that the server is only accepting connections from authorized clients.
+      - **HTTP layer (optional):** On top of the TLS transport, you can select an HTTP authentication method to include in the Authorization header:
 
-      This is the default authentication mechanism used if no other method is selected.
+        - **None:** No HTTP-layer authentication is added. If your server does not enforce client certificate verification, the request will have no authentication.
+        - **Basic (recommended):** Sends an Authorization header with a base64-encoded username:password.
+        - **Bearer:** Sends an Authorization header with a bearer token.
 
-      To take advantage of mutual TLS, you can configure your server to verify Netdata's client certificate. In order to achieve this, the Netdata client sending the notification supports mutual TLS (mTLS) to identify itself with a client certificate that your server can validate.
+      Both layers can operate simultaneously. For example, mTLS + Basic is a valid combination when your server verifies client certificates and also requires an Authorization header.
+
+      ##### Transport-layer authentication (mTLS)
+
+      The Netdata client always presents its X.509 client certificate during the TLS handshake. When your server is configured to verify client certificates, this enables mutual TLS (mTLS), ensuring that only connections from authorized clients are accepted.
+
+      To enforce mTLS on your server, configure it to verify Netdata's client certificate.
 
       The steps to perform this validation are as follows:
 
@@ -656,13 +666,12 @@
         </Directory>
         ```
 
-      ##### Basic authentication
+      ##### HTTP-layer authentication
 
-      In basic authorization, the client sends a request with an Authorization header that includes a base64-encoded string in the format username:password. The server then uses this information to authenticate the client. If this authentication method is selected, the user can set the user and password that will be used when connecting to the destination service.
+      On top of the TLS transport, you can configure an HTTP authentication method to include in the Authorization header of each request. This is optional and complements mTLS.
 
-      ##### Bearer token authentication
-
-      In bearer token authentication, the client sends a request with an Authorization header that includes a bearer token. The server then uses this token to authenticate the client. Bearer tokens are typically generated by an authentication service, and are passed to the client after a successful authentication. If this method is selected, the user can set the token to be used for connecting to the destination service.
+      - **Basic (recommended):** Sends an Authorization header with a base64-encoded username:password. The user sets the username and password in the integration configuration.
+      - **Bearer:** Sends an Authorization header with a bearer token. Bearer tokens are typically generated by an authentication service and passed to the client after a successful authentication. The user sets the token in the integration configuration.
 
 - id: "notify-cloud-ilert"
   meta:
