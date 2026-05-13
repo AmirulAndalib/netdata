@@ -232,6 +232,13 @@ modules:
                     status_accepted:
                       - 200
                       - 204
+            - name: With `response_match`
+              description: Check that the response body contains expected content using a regular expression.
+              config: |
+                jobs:
+                  - name: local
+                    url: http://127.0.0.1:8080/health
+                    response_match: '"status":\s*"ok"'
             - name: With `header_match`
               description: Example configurations with `header_match`. See the value [pattern](https://github.com/netdata/netdata/tree/master/src/go/pkg/matcher#supported-format) syntax.
               config: |
