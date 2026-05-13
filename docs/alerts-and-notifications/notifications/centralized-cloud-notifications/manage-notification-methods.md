@@ -185,8 +185,71 @@ Based on Netdata's documentation, here are recommended practices:
 
 :::
 
+## Troubleshooting Notification Delivery
+
+If Alerts appear in the Netdata Cloud UI but you are not receiving notifications via email, Slack, or the mobile app, work through the following checks in order.
+
+### 1. Check for Active Silencing Rules
+
+Space-level or personal silencing rules may be suppressing notifications. Immediate rules stay active until manually turned off **or** until their specified duration expires.
+
+- Go to **Space Settings** (⚙️) → **Alerts & Notifications** → **Notification Silencing Rules**
+- Review both "All users" rules (set by administrators/managers) and your personal rules
+- Check that no active rule matches the affected Rooms, Nodes, or Alert contexts
+
+See [Manage alert notification silencing rules](/docs/alerts-and-notifications/notifications/centralized-cloud-notifications/manage-alert-notification-silencing-rules.md) for details.
+
+### 2. Verify Notification Methods Are Enabled
+
+An administrator must [enable Alert notifications](#manage-space-notification-settings) for the Space before any user receives notifications.
+
+- **Space level**: Go to **Space Settings** (⚙️) → **Alerts & Notifications** → **Notification Methods** and confirm each method's toggle is enabled
+- **User level**: Click your profile picture → **Settings** → **Notifications** and verify your personal methods are enabled
+
+:::note
+
+If an administrator has disabled a Personal [service level](/docs/alerts-and-notifications/notifications/centralized-cloud-notifications/centralized-cloud-notifications-reference.md#service-level) notification method, this overrides any user-specific setting.
+
+:::
+
+### 3. Check Notification Type Filters
+
+Each notification method has filters for which notification types to deliver (Critical, Warning, Clear, Reachable, Unreachable). Verify that the types you expect are enabled:
+
+- **Space level**: Edit the notification method configuration and review the notification type checkboxes
+- **User level**: In your personal notification settings, confirm the desired types are enabled per Space and Room
+
+### 4. Verify Plan and Service Classification Access
+
+Notification methods are classified as **Community** (e.g., Email, Discord) or **Business** (e.g., Slack, PagerDuty). Methods available depend on your Space's subscription plan. Confirm that the notification method you are using is included in your plan.
+
+See [Service classification](/docs/alerts-and-notifications/notifications/centralized-cloud-notifications/centralized-cloud-notifications-reference.md#service-classification) for details.
+
+### 5. Check Room Membership and Notification Activation
+
+You only receive notifications for Rooms you are a member of, and notifications must be activated for each Room:
+
+- In your personal notification settings, verify you have joined the Room(s) where Alerts originate
+- Confirm that notifications are activated for those Rooms
+
+### 6. Consider Flood Protection
+
+If a Node frequently disconnects or sends excessive Alerts, Netdata Cloud activates flood protection and suppresses notifications automatically. Flood protection resolves on its own when the Node stabilizes. You can still view Alerts in the Netdata Cloud UI during this period.
+
+### Diagnostic Flow
+
+Follow these checks in order to narrow down the cause:
+
+1. **Silencing rules active?** → Disable or adjust the rule
+2. **Notification method enabled at Space and user level?** → Enable the method
+3. **Notification types filtered out?** → Enable the required types
+4. **Method available under your plan?** → Check service classification or upgrade
+5. **Room membership correct?** → Join the Room and activate notifications
+6. **Flood protection active?** → Wait for Node stabilization
+
 ## Related Documentation
 
 - [Alert notification silencing rules](/docs/alerts-and-notifications/notifications/centralized-cloud-notifications/manage-alert-notification-silencing-rules.md)
 - [Service classification reference](/docs/alerts-and-notifications/notifications/centralized-cloud-notifications/centralized-cloud-notifications-reference.md#service-classification)
+- [Centralized Cloud Notifications reference](/docs/alerts-and-notifications/notifications/centralized-cloud-notifications/centralized-cloud-notifications-reference.md)
 - [Agent notification testing](/src/health/notifications/README.md#testing-your-notification-setup)
