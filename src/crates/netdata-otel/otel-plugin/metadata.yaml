@@ -238,6 +238,36 @@ modules:
                   max_new_charts_per_request: 100
                 logs:
                   journal_dir: /var/log/netdata/otel-journals
+            - name: Syslog collection via OpenTelemetry Collector
+              description: |
+                Configure an OpenTelemetry Collector (`otelcol-contrib` distribution) with the
+                syslog receiver to collect system syslog messages and forward them to Netdata
+                via the OTLP/gRPC exporter.
+
+                On the Netdata side, ensure `otel.yaml` has `logs.journal_dir` set. The stock
+                configuration provides a default at install time, so no manual change is needed
+                unless you want a custom journal path. Ingested logs appear in the Netdata
+                Logs tab under the **otel-logs** source.
+
+                Example OpenTelemetry Collector `config.yaml`:
+              config: |
+                receivers:
+                  syslog:
+                    tcp:
+                      listen_address: "0.0.0.0:54526"
+                    protocol: rfc5424
+
+                exporters:
+                  otlp:
+                    endpoint: "localhost:4317"
+                    tls:
+                      insecure: true
+
+                service:
+                  pipelines:
+                    logs:
+                      receivers: [syslog]
+                      exporters: [otlp]
     troubleshooting:
       problems:
         list: []
