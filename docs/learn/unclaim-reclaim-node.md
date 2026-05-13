@@ -48,9 +48,14 @@ See our **[Reconnect Agent](/src/claim/README.md#reconnect-agent)** guide for th
 
 **Restart the agent after removing cloud.d/**
 
-If you don't restart the agent after removing `/var/lib/netdata/cloud.d/`, the node will remain connected to Netdata Cloud until the agent restarts.
+`netdatacli reload-claiming-state` is **not sufficient** to fully disconnect from Netdata Cloud after removing `/var/lib/netdata/cloud.d/`. The reload command reloads claiming configuration from disk but does not tear down the existing ACLK (Agent-Cloud Link) session — only a full restart does.
 
-To apply the unclaiming change immediately, run:
+After deleting `cloud.d/` and running `reload-claiming-state` without restarting, you may encounter an inconsistent state where:
+
+- `netdatacli reload-claiming-state` or `netdatacli aclk-state` still reports the agent as "claimed and online", because the ACLK connection from the prior session remains active
+- The API (`/api/v1/info`) returns `claim_id: null`, because the claiming credentials are no longer available on disk
+
+To fully unclaim the node, run:
 
 ```bash
 sudo systemctl restart netdata
