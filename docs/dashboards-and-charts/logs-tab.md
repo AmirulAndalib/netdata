@@ -2,6 +2,15 @@
 
 The Logs tab provides a structured, searchable view of logs collected from across your infrastructure, supporting multiple log sources depending on the Node's operating system.
 
+## Prerequisites
+
+The Logs tab is available in Netdata Cloud and requires:
+
+- A Netdata Cloud account (sign in at [netdata.cloud](https://netdata.cloud))
+- At least one Space created in Netdata Cloud, with nodes connected to it
+
+If pressing **Connect** in the Logs tab prompts you to add a Space, use the **+** icon at the bottom of the left-most sidebar in Netdata Cloud to create one. See [Spaces and Rooms](/docs/netdata-cloud/organize-your-infrastructure-invite-your-team.md) for full setup instructions.
+
 ## Log sources
 
 The Logs tab displays log entries from the following sources:
