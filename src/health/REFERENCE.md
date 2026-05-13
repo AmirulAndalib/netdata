@@ -995,6 +995,8 @@ Although the `alarm_variables` link shows variables for a particular chart, the 
 - `$system.cpu.user` - User CPU from system.cpu chart
 - `$disk.sda.reads` - Read operations from sda disk chart
 
+Cross-context references use the syntax `${context.dimension}` to reference a dimension from a different chart context within the same Agent. For requirements and limitations, see [Cross-Context Reference Requirements and Limitations](/src/health/README.md#cross-context-reference-requirements-and-limitations) in the alerts overview.
+
 #### Special Variables
 
 | Variable  | Contains               | Usage                                  |

@@ -401,6 +401,17 @@ template: disk_io_vs_iops
    units: bytes per operation
 ```
 
+### Cross-Context Reference Requirements and Limitations
+
+Cross-context references allow an alert to use dimensions from a different chart context than the one specified in its `on:` line. The following requirements and limitations apply:
+
+- **Syntax**: Use `${context.dimension}` where `context` is a valid chart context name (for example, `disk.iops`) and `dimension` is a dimension that exists in that context.
+- **Same-node scope**: Both the alert's target chart and the cross-referenced context must exist on the same Netdata Agent. Cross-context references cannot reference charts on different nodes in a streaming hierarchy.
+- **Resolution order**: Cross-context variables are resolved after dimension values, chart variables, host variables, and other alert variables. See [Available Variables](#available-variables) for the full resolution order.
+- **Label scoring**: When multiple instances of the referenced context exist, Netdata selects the instance with the highest label overlap with the alert's current instance. If no labels match, selection is undefined. See [Variable Resolution and Label Scoring](#variable-resolution-and-label-scoring) for details.
+- **Missing data behavior**: If the referenced context or dimension does not exist, or has no collected data, the variable resolves to NaN. NaN propagates through expressions — see [Missing Data Handling](#missing-data-handling).
+- **Supported lines**: Cross-context references can be used in `calc`, `warn`, and `crit` lines.
+
 ### Variable Resolution and Label Scoring
 
 When alerts reference variables matching multiple instances, Netdata uses label similarity scoring:
