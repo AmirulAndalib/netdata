@@ -305,3 +305,21 @@ A virtual node's identity is determined by its **`guid`** field — not its `hos
 **To preserve data continuity when renaming a vnode**, change only the `hostname` field in the YAML config file under `/etc/netdata/vnodes/` and keep the `guid` unchanged. If a true identity change is needed, accept that historical data belongs to the old identity.
 
 </details>
+
+<details>
+<summary>Can I rename a real (non-virtual) node?</summary>
+
+Yes. The node's display name comes from the `hostname` setting in the `[global]` section of `netdata.conf`. By default, Netdata uses the operating system hostname.
+
+To change the display name, edit `/etc/netdata/netdata.conf`:
+
+```ini
+[global]
+    hostname = desired-name
+```
+
+Then [restart Netdata](/docs/netdata-agent/start-stop-restart.md). The new name appears in local dashboards and Netdata Cloud.
+
+The Machine GUID is **not** affected — this is purely a display-name change, not an identity change.
+
+</details>
