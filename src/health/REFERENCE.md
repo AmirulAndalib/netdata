@@ -1503,6 +1503,52 @@ warn: $this > (($status >= $WARNING) ? (75) : (80))
     - Host variables: `$chart_name.dimension_name`
     - Special variables: `$this`, `$now`, `$status`
 
+#### Working with Prometheus-Collected Metrics in Alerts
+
+When the Prometheus collector scrapes metrics, it auto-generates Netdata chart IDs and dimension names from the raw Prometheus metric names and their labels. **The raw Prometheus metric name is not the Netdata chart ID** — you cannot use it directly on the `on:` line.
+
+The Prometheus collector builds chart IDs by joining the metric name with label key-value pairs (e.g., `kubelet_volume_stats_used_bytes-namespace=myNs-persistentvolumeclaim=myPVC`). Chart contexts follow the pattern `prometheus.{metric_name}` or `prometheus.{application}.{metric_name}` if an application name is configured. Dimension names match the raw Prometheus metric name.
+
+**Step 1 — Find the chart ID or context:**
+
+| Method   | How                                                                    |
+|----------|------------------------------------------------------------------------|
+| Dashboard | Navigate to the chart and look at the chart subtitle/tooltip for the ID or context. |
+| API      | Query `http://NODE:19999/api/v1/charts` and search for the metric name. |
+
+**Step 2 — Find available dimensions and variables:**
+
+```
+http://NODE:19999/api/v1/alarm_variables?chart=CHART_ID
+```
+
+**Example — kubelet PVC volume usage alert:**
+
+Given two Prometheus metrics — `kubelet_volume_stats_used_bytes` and `kubelet_volume_stats_capacity_bytes` — the collector creates separate charts for each PVC. Use a **template** on the chart context to alert on all PVC instances:
+
+```text
+template: pvc_volume_usage
+      on: prometheus.kubelet_volume_stats_used_bytes
+   lookup: average -1m unaligned of kubelet_volume_stats_used_bytes
+     calc: $this * 100 / ${prometheus.kubelet_volume_stats_capacity_bytes.kubelet_volume_stats_capacity_bytes}
+    every: 10s
+     warn: $this > 80
+     crit: $this > 95
+     info: PVC volume usage exceeds threshold
+```
+
+Key points about this example:
+
+- `on:` uses the chart **context** (`prometheus.kubelet_volume_stats_used_bytes`), not the raw metric name or chart ID.
+- `lookup` uses the dimension name (`kubelet_volume_stats_used_bytes`), which matches the raw Prometheus metric name.
+- The `calc` line uses a cross-chart variable reference (`$context.dimension`) to divide used bytes by capacity bytes from a different chart context.
+
+:::note
+
+Cross-chart variable references using `$chart_or_context.dimension_name` syntax are fully supported. When multiple chart instances match a context (e.g., multiple PVCs), Netdata uses label similarity scoring to select the instance with the highest label overlap. Verify available variables using `/api/v1/alarm_variables`.
+
+:::
+
 ### Testing Alert Changes
 
 **Safe Testing Process:**
