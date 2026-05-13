@@ -26,6 +26,7 @@ repository.netdata.cloud/repos/
 │   ├── debian/               # For Debian-based distributions
 │   │   ├── bullseye/         # Distribution codename directories
 │   │   ├── bookworm/
+│   │   ├── trixie/
 │   │   └── ...
 │   ├── ubuntu/               # For Ubuntu-based distributions
 │   │   ├── focal/
@@ -181,6 +182,14 @@ Enabled: Yes
    sudo apt update
    sudo apt install netdata
    ```
+
+### Troubleshooting
+
+If you get a `404 Not Found` error when downloading the repository configuration package, it may mean that native packages are not yet available for your Debian or Ubuntu version. In this case, use the [kickstart.sh installer](/packaging/installer/methods/kickstart.md) instead, which automatically handles this situation by falling back to a static build or building from source.
+
+```bash
+wget -O /tmp/netdata-kickstart.sh https://get.netdata.cloud/kickstart.sh && bash /tmp/netdata-kickstart.sh
+```
 
 ## Example: Complete Installation on Ubuntu 22.04 (Jammy)
 
