@@ -196,6 +196,12 @@ Use **Group by Instance, Dimension** to visualize the time series for each indiv
 
 :::
 
+:::tip
+
+When using **Group by Node**, each Node is assigned a consistent color across all charts in the same view, making it easy to visually correlate the same Node's data across different metrics.
+
+:::
+
 ## Aggregate Functions Dropdown
 
 Each chart has a default aggregation function, which you can adjust as needed:
