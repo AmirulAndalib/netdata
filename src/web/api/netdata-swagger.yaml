@@ -1135,11 +1135,29 @@ paths:
             default: shell
         - name: filter
           in: query
-          description: Allows to filter charts out using simple patterns.
+          description: |
+            Filters charts by their **chart ID** and/or **chart name** using Netdata simple pattern matching.
+
+            **This does not filter by chart labels** (e.g. `cgroup_name`). To filter cgroup charts, use patterns matching the chart ID/name, such as `cgroup_*` or `cgroup_*.nginx`.
+
+            **Note:** The exact match behavior depends on the output format:
+            - **shell**: matches chart name only
+            - **json**: matches both chart ID and chart name
+            - **prometheus**: matches chart ID or chart name depending on configuration
+
+            **Pattern Syntax:**
+            - Exact match: `system.cpu`
+            - Wildcard: `system.*` (all system charts)
+            - Multiple patterns: `system.* disk.*` (space-separated)
+            - Negation: `!system.cpu` (exclude specific chart)
+
+            **Examples:**
+            - `cgroup_*` - Export only cgroup charts (matches chart IDs like `cgroup_nginx.service`)
+            - `system.* disk.*` - Export system and disk charts
+            - `* !*.mdstat` - Export all except mdstat charts
           required: false
           schema:
             type: string
-            format: any text
         - name: variables
           in: query
           description: |
@@ -1767,7 +1785,9 @@ paths:
         - name: filter
           in: query
           description: |
-            Simple pattern filter to include only specific charts. Uses Netdata simple pattern matching.
+            Filters charts by their **chart ID** and/or **chart name** using Netdata simple pattern matching.
+
+            **This does not filter by chart labels** (e.g. `cgroup_name`). To filter cgroup charts, use patterns matching the chart ID/name, such as `cgroup_*` or `cgroup_*.nginx`.
 
             **Pattern Syntax:**
             - Exact match: `system.cpu`
@@ -1778,6 +1798,7 @@ paths:
             When not specified, all charts are exported.
 
             **Examples:**
+            - `cgroup_*` - Export only cgroup charts (matches chart IDs like `cgroup_nginx.service`)
             - `system.*` - Export only system charts
             - `disk.* net.*` - Export disk and network charts
             - `* !*.mdstat` - Export all except mdstat charts
