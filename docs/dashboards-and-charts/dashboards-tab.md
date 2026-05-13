@@ -4,6 +4,25 @@ With **Netdata Cloud**, you can build **custom dashboards** that target your inf
 
 Click the **Dashboards** tab in any Room to get started.
 
+## Custom Dashboards on a Self-Hosted Agent
+
+If you are accessing the Netdata Agent dashboard directly at `http://NODE:19999` without signing in to Netdata Cloud, you can still create **one custom dashboard per agent**.
+
+:::note
+
+Anonymous users are limited to **1 custom dashboard per agent**. To create unlimited dashboards with team sharing and TV mode, [sign in to Netdata Cloud](https://app.netdata.cloud/sign-in). See [Access Control and Feature Availability](/docs/netdata-oss-limitations.md) for the full feature comparison.
+
+:::
+
+To create a custom dashboard on a self-hosted Agent:
+
+1. Open the Agent dashboard at `http://NODE:19999` (replace `NODE` with your Agent's IP address or hostname).
+2. Click the **Dashboards** tab.
+3. Click the **+** button to create a new dashboard.
+4. Use **Add Chart** to select a metric context and configure the chart.
+5. Use **Add Text** to add notes or labels.
+6. Click **Save** to persist your dashboard.
+
 ## Create Your First Dashboard
 
 To create a new dashboard:

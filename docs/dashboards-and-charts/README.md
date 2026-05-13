@@ -27,7 +27,7 @@ The Netdata dashboard consists of the following main sections:
 
 :::tip
 
-Some dashboard features require a Netdata Cloud login and a connected Agent — such as saving chart preferences, accessing custom dashboards, or executing node Functions.
+Anonymous users accessing the Agent dashboard at `http://NODE:19999` can create **1 custom dashboard per agent** without signing in. Features such as unlimited dashboards, TV mode, team sharing, saving chart preferences, and executing sensitive Functions require a [Netdata Cloud login](https://app.netdata.cloud/sign-in). See [Access Control and Feature Availability](/docs/netdata-oss-limitations.md) for the full feature comparison.
 
 :::
 
