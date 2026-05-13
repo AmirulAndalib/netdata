@@ -37,22 +37,34 @@ Netdata provides three API versions that you can access with API tokens:
 - **v2**: Multi-node API with advanced grouping and aggregation capabilities
 - **v3**: The latest API version that combines v1 and v2 endpoints and may include additional features
 
+:::caution
+
+V1 and V2 GET data endpoints (`/api/v1/data`, `/api/v2/data`) are deprecated. They are Agent-only endpoints accessed directly on the agent host — they are not available through the Netdata Cloud proxy at `app.netdata.cloud`. For Cloud API data queries, use the v3 POST endpoints.
+
+:::
+
 ## Common Endpoints
 
 With appropriate API tokens, you can access endpoints including:
 
 - `/api/v2/nodes` - Node information
-- `/api/v2/data` - Multi-dimensional data queries
+- `/api/v2/data` - Multi-dimensional data queries *(deprecated — Agent-only)*
 - `/api/v2/contexts` - Context metadata
 - `/api/v2/weights` - Metric scoring/correlation
 - `/api/v2/q` - Full-text search
 - `/api/v1/info` - Agent information
 - `/api/v1/charts` - Chart information
-- `/api/v1/data` - Single node data queries
+- `/api/v1/data` - Single node data queries *(deprecated — Agent-only)*
 
 :::info
 
 Currently, Netdata Cloud is not exposing the stable API.
+
+:::
+
+:::note
+
+For Cloud data queries, use the v3 POST endpoint `/api/v3/spaces/{spaceID}/rooms/{roomID}/data` with a JSON body. See the [Advanced Metric Queries with Aggregation](#advanced-metric-queries-with-aggregation) example below.
 
 :::
 
@@ -71,6 +83,12 @@ curl -H 'Accept: application/json' -H "Authorization: Bearer <token>" https://ap
 ```
 
 **Query metric data**
+
+:::warning
+
+The `/api/v2/data` GET endpoint is deprecated and only works when called directly on an Agent host. For Cloud API queries, use the v3 POST endpoint shown in [Advanced Metric Queries with Aggregation](#advanced-metric-queries-with-aggregation) below.
+
+:::
 
 ```console
 curl -H 'Accept: application/json' -H "Authorization: Bearer <token>" https://app.netdata.cloud/api/v2/data?contexts=system.cpu&after=-600
