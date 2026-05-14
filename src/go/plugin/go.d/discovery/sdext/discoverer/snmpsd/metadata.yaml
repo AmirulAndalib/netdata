@@ -348,6 +348,19 @@ services:
               options:
                 version: {{ .Credential.Version }}
               community: {{ .Credential.Community }}
+      - name: 'Deduplicate a multi-homed device'
+        description: |
+          A single router with IPs on two scanned subnets (e.g. 192.168.1.1 and 10.0.0.1) would produce two collector jobs. Use a skip rule to keep only the primary IP and drop the secondary.
+
+          The skip rule matches devices by `.SysInfo.Name` prefix and drops any IP outside the primary subnet. Because it has no `config_template`, the matching target is discarded before the catch-all can create a job for it.
+        config: |
+          - id: skip-secondary-ips
+            match: '{{ and (ne .IPAddress "") (not (glob .IPAddress "192.168.1.*")) (glob .SysInfo.Name "router-*") }}'
+
+          - id: snmp
+            match: '{{ true }}'
+            config_template: |
+              # ... (same as the catch-all in the Default catch-all rule example above)
 verify:
   description: 'After enabling the discoverer, confirm it is finding devices and producing jobs.'
   checks:
@@ -398,3 +411,24 @@ troubleshooting:
           - The rendered `config_template` produces invalid YAML for some discovered field values (for example, unescaped colons in `sysName`). YAML-quote dynamic values when in doubt.
           - Module name mismatch — the rule `id` (or explicit `module:` field) does not match `snmp`.
           - SNMPv3 credentials succeeded for `system` MIB during discovery but the collector cannot read other OIDs (different VACM view); confirm with `snmpwalk` against the device.
+      - name: 'Same device appears multiple times (multiple IPs)'
+        description: |
+          If a device has more than one IP address on the subnets being scanned, the discoverer produces one target per IP — each one creates a separate `snmp` collector job for the same physical device.
+
+          To deduplicate, add a **skip rule** that drops all but one IP for each device. The most common approach is to match on `.SysInfo.Name` (the device hostname) and skip secondary addresses.
+
+          Example — only keep addresses from the primary subnet for known multi-homed devices:
+
+          ```yaml
+          services:
+            # Skip secondary IPs for known multi-homed devices
+            - id: skip-secondary-ips
+              match: '{{ and (ne .IPAddress "") (not (glob .IPAddress "192.168.1.*")) (glob .SysInfo.Name "router-*") }}'
+
+            - id: snmp
+              match: '{{ true }}'
+              config_template: |
+                # ... catch-all body
+          ```
+
+          Adjust the IP and name patterns to match your environment. The key idea: a skip rule (no `config_template`) placed **before** the catch-all drops the duplicate target before any job is created.
