@@ -54,6 +54,12 @@ Netdata exports metrics to the following databases through various [connectors](
 |   **VictoriaMetrics**    |                                                  [Prometheus remote write](/src/exporting/prometheus/remote_write/README.md)                                                  |
 |      **Wavefront**       |                                                  [Prometheus remote write](/src/exporting/prometheus/remote_write/README.md)                                                  |
 
+## Third-Party Observability Platforms
+
+Observability platforms that support Prometheus metric scraping — such as **Datadog**, **New Relic**, and others — can ingest Netdata metrics directly via Netdata's Prometheus API endpoint at `/api/v1/allmetrics?format=prometheus`. This endpoint is available by default on port `19999` and requires no additional Netdata configuration.
+
+For details on configuring Netdata's Prometheus endpoint (including authentication, TLS, and metric filtering), see the [Prometheus scraper documentation](/src/exporting/prometheus/README.md). To complete the integration, consult your platform's documentation for setting up a Prometheus check or scrape target (for example, Datadog's [Prometheus integration](https://docs.datadoghq.com/integrations/openmetrics/)).
+
 :::tip
 
 **Can't find your preferred external time-series database?** Ask our [community](https://community.netdata.cloud/) for solutions, or file an [issue on GitHub](https://github.com/netdata/netdata/issues/new?assignees=&labels=bug%2Cneeds+triage&template=BUG_REPORT.yml).
